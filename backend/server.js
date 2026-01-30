@@ -21,9 +21,10 @@ mongoose
 // Job Schema
 const jobSchema = new mongoose.Schema({
   company: { type: String, required: true },
-  role: { type: String, required: true },
+  position: { type: String, required: true },
   status: { type: String, required: true },
 });
+
 
 const Job = mongoose.model("Job", jobSchema);
 
@@ -40,13 +41,13 @@ app.get("/jobs", async (req, res) => {
 
 // POST job
 app.post("/jobs", async (req, res) => {
-  const { company, role, status } = req.body;
+  const { company, position, status } = req.body;
 
-  if (!company || !role || !status) {
+  if (!company || !position || !status) {
     return res.status(400).json({ message: "All fields required" });
   }
 
-  const newJob = new Job({ company, role, status });
+  const newJob = new Job({ company, position, status });
   await newJob.save();
 
   res.status(201).json(newJob);
@@ -55,4 +56,10 @@ app.post("/jobs", async (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
+
+// DELETE job
+app.delete("/jobs/:id", async (req, res) => {
+  await Job.findByIdAndDelete(req.params.id);
+  res.json({ message: "Job deleted" });
 });
